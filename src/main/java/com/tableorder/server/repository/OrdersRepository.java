@@ -2,7 +2,9 @@ package com.tableorder.server.repository;
 
 import com.tableorder.server.dto.DailySalesResponseDto; // DTO import 추가
 import com.tableorder.server.dto.MonthlySalesResponseDto;
+import com.tableorder.server.entity.OrderStatus;
 import com.tableorder.server.entity.Orders;
+import org.hibernate.query.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query; // @Query import 추가
 import org.springframework.data.repository.query.Param; // @Param import 추가
@@ -37,6 +39,8 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
             "    saleMonth ASC",
             nativeQuery = true)
     List<MonthlySalesResponseDto> findMonthlySalesByYear(@Param("year") int year);
+
+    List<Orders> findAllByTableNumberAndStatusIn(Integer tableNumber, List<OrderStatus> statuses);
 
 }
 

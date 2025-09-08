@@ -28,7 +28,6 @@ public class Orders extends BaseTimeEntity {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 
@@ -38,5 +37,9 @@ public class Orders extends BaseTimeEntity {
 
     public void updateTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public void complatePayment() {
+        this.status = OrderStatus.PAID;
     }
 }

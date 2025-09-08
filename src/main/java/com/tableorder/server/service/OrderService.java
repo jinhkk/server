@@ -7,6 +7,7 @@ import com.tableorder.server.repository.OrdersRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -61,5 +62,33 @@ public class OrderService {
 
         // 8. '영수증'(Orders)을 저장합니다. cascade 옵션 덕분에 상세 내역(OrderItems)도 함께 저장됩니다.
         return ordersRepository.save(newOrder);
+    }
+
+    // 개별 주문용 선결제 시 사용하는 느낌으로 놔두자
+    @Transactional
+    public void processPayment(Integer orderId) {
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+
+        order.complatePayment();
+    }
+
+    // 테이블 번호 기준으로 보통의 테이블 오더처럼 집계
+
+    @Transactional
+    public void processPaymentForTable(Integer tableNumber) {
+        // 결제할 주문 상태 목록 만들기
+        List<OrderStatus> statusesToPay = List.of(OrderStatus.RECEIVED, OrderStatus.PREPARING, OrderStatus.COMPLETED);
+
+        // repo에서 해당 테이블의 미결제 주문 가져오기
+        List<Orders> ordersToPay = ordersRepository.findAllByTableNumberAndStatusIn(tableNumber, statusesToPay);
+
+        if (ordersToPay.isEmpty()) {
+            throw new IllegalStateException(tableNumber + "번 테이블에 결제할 주문이 없습니다.");
+        }
+        // 결제한 모든 주문의 상태를 결제완료로 변경
+        for(Orders orders : ordersToPay) {
+            orders.complatePayment();
+        }
     }
 }

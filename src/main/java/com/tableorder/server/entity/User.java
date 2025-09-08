@@ -1,5 +1,6 @@
 package com.tableorder.server.entity;
 
+import com.tableorder.server.entity.converter.UserRoleConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +25,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Convert(converter = UserRoleConverter.class) // Converter 사용함을 알림
+    @Column(name = "role", nullable = false)
     private UserRole userRole;
 
     @Column(nullable = false)

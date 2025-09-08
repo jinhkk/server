@@ -2,13 +2,16 @@ package com.tableorder.server.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "categories")
 public class Category extends BaseTimeEntity {
     @Id

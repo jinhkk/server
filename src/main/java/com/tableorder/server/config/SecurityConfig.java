@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService; // UserDetailsService 주입
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,7 +35,11 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(auth -> auth
+                // Swagger 관련 경로들은 모두 허용
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // 사용자 관련 API들은 모두 허용
                 .requestMatchers("/api/users/**").permitAll()
+                // 위에서 허용한 URL 외의 모든 요청은 인증(로그인)이 필요함
                 .anyRequest().authenticated()
         );
 

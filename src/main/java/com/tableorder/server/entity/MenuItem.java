@@ -37,4 +37,8 @@ public class MenuItem extends BaseTimeEntity {
     @Builder.Default // @Builder.Default는
     @Column(nullable = false)
     private Boolean isSoldOut = false; // 이렇게 초기값이 있는 필드와 한 세트여야 함
+
+    public void updateSoldOutStatus(boolean isSoldOut) {
+        this.isSoldOut = isSoldOut;
+    }
 }

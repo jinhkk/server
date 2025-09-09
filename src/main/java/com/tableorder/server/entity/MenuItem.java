@@ -1,5 +1,6 @@
 package com.tableorder.server.entity;
 
+import com.tableorder.server.dto.UpdateMenuItemDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +39,23 @@ public class MenuItem extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean isSoldOut = false; // 이렇게 초기값이 있는 필드와 한 세트여야 함
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
     public void updateSoldOutStatus(boolean isSoldOut) {
         this.isSoldOut = isSoldOut;
+    }
+
+    public void updateDetails(UpdateMenuItemDto dto, Category category) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.description = dto.getDescription();
+        this.imageUrl = dto.getImageUrl();
+        this.category = category;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

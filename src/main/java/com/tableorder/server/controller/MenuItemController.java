@@ -2,6 +2,7 @@ package com.tableorder.server.controller;
 
 import com.tableorder.server.dto.AddNewMenuDto;
 import com.tableorder.server.dto.MenuItemResponseDto;
+import com.tableorder.server.dto.UpdateMenuItemDto;
 import com.tableorder.server.entity.MenuItem;
 import com.tableorder.server.service.MenuService;
 import jakarta.validation.Valid;
@@ -53,6 +54,36 @@ public class MenuItemController {
         MenuItemResponseDto responseDto = new MenuItemResponseDto(createdMenuItem);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')") // 관리자나 직원만 수정 가능
+    @PutMapping("/menu-items/{menuItemId}")
+    public ResponseEntity<MenuItemResponseDto> updateMenu(
+            @PathVariable Integer menuItemId,
+            @Valid @RequestBody UpdateMenuItemDto requestDto) {
+
+        // 1. 서비스에 메뉴 수정을 위임한다.
+        MenuItem updatedMenuItem = service.updateMenu(menuItemId, requestDto);
+
+        // 2. DB에 반영된 최신 정보를 다시 DTO로 변환해서 클라이언트에게 보내준다.
+        MenuItemResponseDto responseDto = new MenuItemResponseDto(updatedMenuItem);
+
+        // 3. 성공했다는 의미로 HTTP 상태 코드 200(OK)와 함께 응답한다.
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')") // 관리자나 직원만 삭제 가능
+    @DeleteMapping("/menu-items/{menuItemId}")
+    public ResponseEntity<String> deleteMenu(@PathVariable Integer menuItemId) {
+        // 1. 서비스에 메뉴 삭제를 위임한다.
+        service.deleteMenu(menuItemId);
+
+        // 2. 성공적으로 삭제되었다는 메시지를 클라이언트에게 보내준다.
+        //    삭제 후에는 돌려줄 데이터가 없으니, 보통은 메시지만 보내거나
+        //    아무 내용 없이(No Content) 응답하기도 해.
+        String successMessage = menuItemId + "번 메뉴가 성공적으로 삭제되었습니다.";
+
+        return ResponseEntity.ok(successMessage);
     }
 
 }

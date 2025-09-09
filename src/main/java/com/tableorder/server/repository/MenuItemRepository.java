@@ -1,12 +1,18 @@
+// src/main/java/com/tableorder/server/repository/MenuItemRepository.java
+
 package com.tableorder.server.repository;
 
 import com.tableorder.server.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 
 public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
-    List<MenuItem> findByCategoryId(Integer categoryId); // MenuItem : 어떤 클래스(데이터, 테이블)를 전문적으로 다룰것이냐,
-                                                                                // Integer : row 찾을때 무엇으로 찾을거냐? 기본키인 id가 int라서 Integer
+
+    // 기존에 있던 메소드
+    List<MenuItem> findByCategoryId(Integer categoryId);
+
+    // Soft Delete를 위해 새로 추가한 메소드. "삭제되지 않은(IsDeletedFalse) 메뉴를 카테고리 ID로 찾는다"
+    // 이렇게 선언만 해두면 Spring Data JPA가 이름을 보고 마법처럼 구현해 줘.
+    List<MenuItem> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
 
 }

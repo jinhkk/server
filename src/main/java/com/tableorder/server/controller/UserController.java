@@ -34,7 +34,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         String token = service.login(requestDto);
-        response.addHeader("Autorization", token);  // 이게 헤더로 토큰을 보여주는거임
+        response.addHeader("Authorization", token);  // 이게 헤더로 토큰을 보여주는거임
         return ResponseEntity.ok("로그인 성공");
     }
 

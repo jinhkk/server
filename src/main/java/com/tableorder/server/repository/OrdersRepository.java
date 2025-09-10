@@ -20,7 +20,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query("SELECT new com.tableorder.server.dto.DailySalesResponseDto(CAST(o.createdAt AS LocalDate), SUM(o.totalPrice)) " +
             "FROM Orders o " +
             "WHERE CAST(o.createdAt AS LocalDate) BETWEEN :startDate AND :endDate " +
-            "AND o.status != com.tableorder.server.entity.OrderStatus.CANCELED " +
+            "AND o.status = com.tableorder.server.entity.OrderStatus.PAID " +
             "GROUP BY CAST(o.createdAt AS LocalDate) " +
             "ORDER BY CAST(o.createdAt AS LocalDate) ASC")
     List<DailySalesResponseDto> findDailySalesBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
@@ -33,7 +33,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
             "    orders " +
             "WHERE " +
             "    YEAR(created_at) = :year " +
-            "    AND status != 'CANCELED' " +
+            "    AND status = 'PAID' " +
             "GROUP BY " +
             "    saleMonth " +
             "ORDER BY " +

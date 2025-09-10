@@ -2,6 +2,7 @@ package com.tableorder.server.repository;
 
 import com.tableorder.server.dto.DailySalesResponseDto; // DTO import 추가
 import com.tableorder.server.dto.MonthlySalesResponseDto;
+import com.tableorder.server.dto.SalesByMenuResponseDto;
 import com.tableorder.server.entity.OrderStatus;
 import com.tableorder.server.entity.Orders;
 import org.hibernate.query.Order;
@@ -42,6 +43,16 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 
     List<Orders> findAllByTableNumberAndStatusIn(Integer tableNumber, List<OrderStatus> statuses);
 
+
+    @Query("SELECT new com.tableorder.server.dto.SalesByMenuResponseDto(mi.name, SUM(oi.quantity), SUM(oi.pricePerItem * oi.quantity)) " +
+            "FROM OrderItems oi " +
+            "JOIN oi.menuItem mi " +
+            "JOIN oi.orders o " +
+            "WHERE CAST(o.createdAt AS LocalDate) BETWEEN :startDate AND :endDate " +
+            "AND o.status = com.tableorder.server.entity.OrderStatus.PAID " +
+            "GROUP BY mi.name " +
+            "ORDER BY SUM(oi.quantity) DESC")
+    List<SalesByMenuResponseDto> findSalesByMenuBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
 
 

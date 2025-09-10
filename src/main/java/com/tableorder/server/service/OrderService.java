@@ -2,25 +2,27 @@ package com.tableorder.server.service;
 
 import com.tableorder.server.dto.OrderRequestDto;
 import com.tableorder.server.entity.*;
+import com.tableorder.server.handler.WebSocketHandler;
 import com.tableorder.server.repository.MenuItemRepository;
 import com.tableorder.server.repository.OrdersRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrdersRepository ordersRepository;
     private final MenuItemRepository menuItemRepository;
+    private final WebSocketHandler webSocketHandler;
 
-    public OrderService(OrdersRepository ordersRepository, MenuItemRepository menuItemRepository) {
-        this.ordersRepository = ordersRepository;
-        this.menuItemRepository = menuItemRepository;
-    }
-
-    @Transactional // 이 메소드 전체를 하나의 트랜잭션으로 묶어줍니다.
+    @SneakyThrows // try-catch 문 대신 해주는 lombok 어노테이션
+    @Transactional
     public Orders createOrder(OrderRequestDto requestDto) {
 
         // 1. '영수증'에 해당하는 Orders 엔티티를 먼저 생성합니다.
@@ -61,7 +63,11 @@ public class OrderService {
         newOrder.updateTotalPrice(totalPrice); // Orders 엔티티에 totalPrice를 업데이트하는 메소드를 추가해야 합니다.
 
         // 8. '영수증'(Orders)을 저장합니다. cascade 옵션 덕분에 상세 내역(OrderItems)도 함께 저장됩니다.
-        return ordersRepository.save(newOrder);
+        Orders savedOrder = ordersRepository.save(newOrder);
+
+        // 9. 주문이 성공적으로 저장된 후, 모든 클라이언트에게 새 주문 정보를 발송 합니다.
+        webSocketHandler.broadcast(savedOrder);
+        return savedOrder;
     }
 
     // 개별 주문용 선결제 시 사용하는 느낌으로 놔두자
@@ -91,4 +97,6 @@ public class OrderService {
             orders.complatePayment();
         }
     }
+
+
 }

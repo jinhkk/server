@@ -2,6 +2,7 @@ package com.tableorder.server.controller;
 
 import com.tableorder.server.dto.DailySalesResponseDto;
 import com.tableorder.server.dto.MonthlySalesResponseDto;
+import com.tableorder.server.dto.SalesByMenuResponseDto;
 import com.tableorder.server.service.SalesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,6 +38,17 @@ public class SalesController {
     public ResponseEntity<List<MonthlySalesResponseDto>> getMonthlySales(@RequestParam("year") int year) {
         List<MonthlySalesResponseDto> monthlySales = service.getMonthlySales(year);
         return ResponseEntity.ok(monthlySales);
+    }
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/by-menu")
+    public ResponseEntity<List<SalesByMenuResponseDto>> getSalesByMenu(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        List<SalesByMenuResponseDto> salesByMenu = service.getSalesByMenu(startDate, endDate);
+        return ResponseEntity.ok(salesByMenu);
     }
 
 }

@@ -10,8 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -39,5 +42,20 @@ public class UserController {
     public ResponseEntity<UserInfoResponseDto> getMyInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserInfoResponseDto userInfo = service.getMyInfo(userDetails.getUser());
         return ResponseEntity.ok(userInfo);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<UserInfoResponseDto>> getAllUers() {
+        List<UserInfoResponseDto> users = service.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')") // 오직 ADMIN 권한만 이 기능을 사용할 수 있습니다.
+    public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
+        service.deleteUser(userId);
+        return ResponseEntity.ok(userId + "번 사용자가 성공적으로 삭제되었습니다.");
     }
 }

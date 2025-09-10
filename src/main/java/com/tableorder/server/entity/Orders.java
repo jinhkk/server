@@ -1,5 +1,6 @@
 package com.tableorder.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class Orders extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderItems> orderItems = new ArrayList<>();
 
     public void updateTotalPrice(BigDecimal totalPrice) {

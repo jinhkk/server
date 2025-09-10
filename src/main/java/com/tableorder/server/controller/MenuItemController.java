@@ -86,4 +86,11 @@ public class MenuItemController {
         return ResponseEntity.ok(successMessage);
     }
 
+    @GetMapping("/menu-items/{menuItemId}")
+    public ResponseEntity<MenuItem> getMenuItemById(@PathVariable Integer menuItemId) {
+        // MenuService에 메뉴 ID로 메뉴 하나를 찾아오는 메소드를 추가해야 합니다.
+        MenuItem menuItem = service.findMenuItemById(menuItemId);
+        return ResponseEntity.ok(menuItem);
+    }
+
 }

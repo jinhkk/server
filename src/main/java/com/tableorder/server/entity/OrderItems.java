@@ -1,6 +1,7 @@
 package com.tableorder.server.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class OrderItems extends BaseTimeEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id") // order_id 컬럼과 연결
+    @JsonBackReference
     private Orders orders;
 
     @ManyToOne(fetch = FetchType.LAZY)

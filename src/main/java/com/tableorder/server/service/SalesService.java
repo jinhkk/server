@@ -2,6 +2,7 @@ package com.tableorder.server.service;
 
 import com.tableorder.server.dto.DailySalesResponseDto;
 import com.tableorder.server.dto.MonthlySalesResponseDto;
+import com.tableorder.server.dto.SalesByMenuResponseDto;
 import com.tableorder.server.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,9 @@ public class SalesService {
 
     public List<MonthlySalesResponseDto> getMonthlySales(int year) {
         return repo.findMonthlySalesByYear(year);
+    }
+
+    public List<SalesByMenuResponseDto> getSalesByMenu(LocalDate startDate, LocalDate endDate) {
+        return repo.findSalesByMenuBetweenDates(startDate, endDate);
     }
 }

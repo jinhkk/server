@@ -3,6 +3,7 @@ package com.tableorder.server.security;
 import com.tableorder.server.entity.User;
 import com.tableorder.server.entity.UserRole;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Getter
+@Slf4j
 public class UserDetailsImpl implements UserDetails {
 
     private final User user;
@@ -23,6 +25,9 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         UserRole role = user.getUserRole();
         String authority = "ROLE_" + role.getRole().toUpperCase();
+        log.info("사용자 '{}' 에게 부여된 권한: {}", user.getUserName(), authority);
+
+
         return Collections.singletonList(new SimpleGrantedAuthority(authority));
     }
 

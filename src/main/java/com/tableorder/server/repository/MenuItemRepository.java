@@ -4,7 +4,11 @@ package com.tableorder.server.repository;
 
 import com.tableorder.server.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
 
@@ -15,4 +19,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
     // 이렇게 선언만 해두면 Spring Data JPA가 이름을 보고 마법처럼 구현해 줘.
     List<MenuItem> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
 
+//    @Query("SELECT m FROM menu_item m LEFT JOIN FETCH m.category WHERE m.id = :id AND m.isDeleted = false")
+//    Optional<MenuItem> findByIdWithCategory(@Param("id") Integer id);
 }

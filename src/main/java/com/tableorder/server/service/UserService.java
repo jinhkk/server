@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor // final 생성자 자동으로 만들어줌
 public class UserService {
@@ -51,5 +54,24 @@ public class UserService {
 
     public UserInfoResponseDto getMyInfo(User user) {
         return new UserInfoResponseDto(user);
+    }
+
+    public List<UserInfoResponseDto> getAllUsers() {
+        List<User> users = repo.findAll();
+
+        return users.stream()
+                .map(UserInfoResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public void deleteUser(Integer userId) {
+        // 1. 삭제할 사용자가 DB에 존재하는지 확인합니다. 없으면 에러를 발생시킵니다.
+        User user = repo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다: " + userId));
+
+        // 2. 사용자를 DB에서 삭제합니다.
+        repo.delete(user);
     }
 }

@@ -7,6 +7,7 @@ import com.tableorder.server.entity.Category;
 import com.tableorder.server.entity.MenuItem;
 import com.tableorder.server.repository.CategoryRepository;
 import com.tableorder.server.repository.MenuItemRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +17,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MenuService {
     private final MenuItemRepository repo;
     private final CategoryRepository categoryRepository;
 
-    public MenuService(MenuItemRepository repo, CategoryRepository categoryRepository, CategoryRepository categoryRepository1) {
-        this.repo = repo;
-        this.categoryRepository = categoryRepository1;
+    public MenuItem findMenuItemById(Integer menuItemId) {
+        return repo.findById(menuItemId)
+                .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다: " + menuItemId));
     }
-
-
 
     public List<MenuItemResponseDto> findMenuItemByCategory(Integer categoryId) {
 
@@ -98,4 +98,5 @@ public class MenuService {
         menuItem.delete();
         // @Transactional 덕분에 메소드가 끝나면 자동으로 UPDATE 쿼리가 날아갈 거야.
     }
+
 }

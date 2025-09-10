@@ -64,7 +64,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // [수정] 회원가입과 로그인 API만 정확히 지정해서 허용
-                .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login", "/api/orders/").permitAll()
 
                 // [핵심] 메뉴와 카테고리를 '조회'하는 GET 요청은 누구나 가능하도록 허용
                 .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/menu-items/**").permitAll()

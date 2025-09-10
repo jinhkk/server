@@ -42,6 +42,8 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     List<MonthlySalesResponseDto> findMonthlySalesByYear(@Param("year") int year);
 
     List<Orders> findAllByTableNumberAndStatusIn(Integer tableNumber, List<OrderStatus> statuses);
+    @Query("SELECT o FROM Orders o JOIN FETCH o.orderItems oi JOIN FETCH oi.menuItem mi WHERE o.tableNumber = :tableNumber AND o.status IN :statuses")
+    List<Orders> findAllByTableNumberAndStatusInWithDetails(@Param("tableNumber") Integer tableNumber, @Param("statuses") List<OrderStatus> statuses);
 
 
     @Query("SELECT new com.tableorder.server.dto.SalesByMenuResponseDto(mi.name, SUM(oi.quantity), SUM(oi.pricePerItem * oi.quantity)) " +
@@ -53,6 +55,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
             "GROUP BY mi.name " +
             "ORDER BY SUM(oi.quantity) DESC")
     List<SalesByMenuResponseDto> findSalesByMenuBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<Orders> findByStatusNot(OrderStatus status);
 }
 
 

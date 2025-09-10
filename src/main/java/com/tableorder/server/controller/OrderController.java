@@ -1,11 +1,16 @@
 package com.tableorder.server.controller;
 
+import com.tableorder.server.dto.AggregatedOrderItemDto;
 import com.tableorder.server.dto.OrderRequestDto;
+import com.tableorder.server.dto.TableOrderResponseDto;
+import com.tableorder.server.dto.UnpaidOrderResponseDto;
 import com.tableorder.server.entity.Orders;
 import com.tableorder.server.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -33,5 +38,18 @@ public class OrderController {
     public ResponseEntity<String> processPaymentForTable(@PathVariable Integer tableNumber) {
         service.processPaymentForTable(tableNumber);
         return ResponseEntity.ok(tableNumber + "번 테이블의 결제가 완료되었습니다.");
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @GetMapping("/unpaid")
+    public ResponseEntity<List<TableOrderResponseDto>> getUnpaidOrders() {
+        return ResponseEntity.ok(service.getUnpaidOrdersByTable());
+    }
+
+
+    @GetMapping("/table/{tableNumber}/unpaid")
+    public ResponseEntity<List<AggregatedOrderItemDto>> getUnpaidOrdersForTable(@PathVariable Integer tableNumber) {
+        List<AggregatedOrderItemDto> aggregatedItems = service.getUnpaidOrdersForTable(tableNumber);
+        return ResponseEntity.ok(aggregatedItems);
     }
 }

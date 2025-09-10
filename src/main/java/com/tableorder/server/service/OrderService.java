@@ -14,9 +14,7 @@ import org.hibernate.query.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,6 +85,7 @@ public class OrderService {
 
     // 테이블 번호 기준으로 보통의 테이블 오더처럼 집계
 
+    @SneakyThrows
     @Transactional
     public void processPaymentForTable(Integer tableNumber) {
         // 결제할 주문 상태 목록 만들기
@@ -102,6 +101,10 @@ public class OrderService {
         for(Orders orders : ordersToPay) {
             orders.complatePayment();
         }
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "PAYMENT_COMPLETED");
+        message.put("tableNumber", tableNumber);
+        webSocketHandler.broadcast(message);
     }
     @Transactional(readOnly = true) // 데이터를 조회만 하므로 readOnly = true 옵션 추가
     public List<TableOrderResponseDto> getUnpaidOrdersByTable() {
@@ -136,6 +139,10 @@ public class OrderService {
     public List<AggregatedOrderItemDto> getUnpaidOrdersForTable(Integer tableNumber) {
         List<OrderStatus> unpaidStatuses = List.of(OrderStatus.RECEIVED, OrderStatus.PREPARING, OrderStatus.COMPLETED);
         List<Orders> unpaidOrders = ordersRepository.findAllByTableNumberAndStatusInWithDetails(tableNumber, unpaidStatuses);
+
+        if (unpaidOrders.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         // 1. 해당 테이블의 모든 주문 항목(OrderItems)들을 하나의 리스트로 펼칩니다.
         List<OrderItems> allOrderItems = unpaidOrders.stream()

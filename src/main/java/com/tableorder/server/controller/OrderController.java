@@ -6,20 +6,21 @@ import com.tableorder.server.dto.TableOrderResponseDto;
 import com.tableorder.server.dto.UnpaidOrderResponseDto;
 import com.tableorder.server.entity.Orders;
 import com.tableorder.server.service.OrderService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
     private final OrderService service;
 
-    public OrderController(OrderService service) {
-        this.service = service;
-    }
 
     @PostMapping("/")
     public Orders createOrder(@RequestBody OrderRequestDto requestDto) {
@@ -49,7 +50,13 @@ public class OrderController {
 
     @GetMapping("/table/{tableNumber}/unpaid")
     public ResponseEntity<List<AggregatedOrderItemDto>> getUnpaidOrdersForTable(@PathVariable Integer tableNumber) {
-        List<AggregatedOrderItemDto> aggregatedItems = service.getUnpaidOrdersForTable(tableNumber);
-        return ResponseEntity.ok(aggregatedItems);
+        try {
+            List<AggregatedOrderItemDto> aggregatedItems = service.getUnpaidOrdersForTable(tableNumber);
+            return ResponseEntity.ok(aggregatedItems);
+        } catch (Exception e) {
+            // 어떤 에러가 발생하더라도, 500 에러 대신 비어있는 목록과 200 OK 상태를 반환한다.
+            log.error("[API ERROR] /api/orders/table/{}/unpaid 조회 중 에러 발생: {}", tableNumber, e.getMessage());
+            return ResponseEntity.ok(new ArrayList<>());
+        }
     }
 }

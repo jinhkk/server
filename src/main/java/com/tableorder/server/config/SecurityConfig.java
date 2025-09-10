@@ -69,6 +69,8 @@ public class SecurityConfig {
                 // [핵심] 메뉴와 카테고리를 '조회'하는 GET 요청은 누구나 가능하도록 허용
                 .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/menu-items/**").permitAll()
 
+                .requestMatchers("/ws/**").permitAll()
+
                 // 위에서 허용한 것 외의 모든 요청은 인증(로그인)이 필요함
                 .anyRequest().authenticated()
         );

@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket // WebSocket 기능 사용할거라는 의미
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
-    private final WebSocketHandler webSocketHandler;
+    private final com.tableorder.server.handler.WebSocketHandler webSocketHandler;
 
 
     @Override

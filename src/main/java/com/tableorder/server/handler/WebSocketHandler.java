@@ -48,6 +48,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String jsonMessage = objectMapper.writeValueAsString(data);
         TextMessage textMessage = new TextMessage(jsonMessage);
 
+        log.info("📢 [WebSocket] 전체 방송 시작! 대상: {}명, 내용: {}", sessions.size(), jsonMessage);
+
         for (WebSocketSession session : sessions.values()) {
             if (session.isOpen()) {
                 session.sendMessage(textMessage);

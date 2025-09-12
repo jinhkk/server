@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login", "/api/orders/").permitAll()
 
                 // [핵심] 메뉴와 카테고리를 '조회'하는 GET 요청은 누구나 가능하도록 허용
-                .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/menu-items/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/menu-items/**", "/api/orders/**").permitAll()
 
                 .requestMatchers("/ws/**").permitAll()
 
